@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بحث عن مشترك باستخدام رقم الحساب</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            color: #444;
+            text-align: center;
+            padding: 20px;
+            background-color: #28a745;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap; /* يتيح للعناصر الالتفاف على الشاشات الصغيرة */
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="button"] {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #218838;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* إضافة Media Queries للشاشات الصغيرة */
+        @media (max-width: 600px) {
+            .search-box {
+                flex-direction: column; /* تغيير الاتجاه إلى عمودي */
+            }
+
+            input[type="text"], select, input[type="button"] {
+                width: 100%; /* اجعل العناصر تملأ العرض الكامل للشاشة */
+                margin-bottom: 10px; /* إضافة بعض المسافات بين العناصر */
+            }
+
+            h2 {
+                font-size: 20px; /* تصغير حجم العنوان */
+            }
+
+            table, th, td {
+                font-size: 14px; /* تصغير حجم النص في الجدول */
+            }
+        }
+
+        /* استعلام الطباعة لإخفاء الأزرار والعناصر الأخرى */
+        @media print {
+            .search-box {
+                display: none; /* إخفاء منطقة البحث */
+            }
+            h2 {
+                display: none; /* إخفاء العنوان */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2>البحث عن مشترك باستخدام رقم الحساب</h2>
+
+<div class="container">
+    <div class="search-box">
+        <input type="text" id="account_number" placeholder="رقم الحساب">
+        
+        <!-- قائمة منسدلة لاختيار الورقة -->
+        <select id="sheet_name">
+            <option value="السكني">سكني</option>
+            <option value="العمل">العمل</option>
+            <option value="البرادات">البرادات</option>
+            <option value="المعامل والمغاسل">المعامل والمغاسل</option>
+            <option value="التجاري">التجاري</option>
+            <option value="all">فواتير مشتركة</option> <!-- خيار جديد للبحث في جميع الأوراق -->
+        </select>
+
+        <input type="button" value="بحث" onclick="searchAccount()">
+        <input type="button" value="حفظ كـ PDF" onclick="saveAsPDF()"> <!-- زر لحفظ الصفحة كـ PDF -->
+    </div>
+
+    <div id="results"></div>
+</div>
+
+<script>
+    function searchAccount() {
+        var accountNumber = document.getElementById("account_number").value;
+        var sheetName = document.getElementById("sheet_name").value;
+
+        // تحقق من أن المستخدم أدخل رقم الحساب
+        if (accountNumber.trim() === "") {
+            alert("يرجى إدخال رقم الحساب.");
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "search.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById("results").innerHTML = xhr.responseText;
+            }
+        };
+
+        // إرسال البيانات
+        xhr.send("account_number=" + encodeURIComponent(accountNumber) + "&sheet_name=" + encodeURIComponent(sheetName));
+    }
+
+    function saveAsPDF() {
+        window.print(); // استدعاء نافذة الطباعة
+    }
+</script>
+
+</body>
+</html>
